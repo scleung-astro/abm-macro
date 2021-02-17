@@ -1,5 +1,6 @@
 # abm-macro
 agent based modeling of macroeconomics
+(full code available on collaboration basis) 
 
 shop.py: the firm class is the central part of the macroeconomic simulation.
 It is responsible for production and consumption. Its extra budget is used for 
