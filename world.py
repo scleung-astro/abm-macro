@@ -1,3 +1,12 @@
+"""
+The World class. It contains all the essential classes
+in the same platform including City, Firms and Market
+
+Also see readme.md on Github for its logical design
+Written by Shing Chi Leung in Dec 2021
+
+"""
+
 from mycalendar import Calendar
 from param import BREAD, N_CITIES, N_GOODS, WATER, WHEAT
 from city import City
@@ -16,6 +25,13 @@ class World():
         self.calendar = Calendar()
 
     def evolve(self):
+
+        '''
+        evolve one day in the world, which includes all the activities
+        of all agents in a cycle
+
+        return None
+        '''
 
         global_ask_order = [[0 for i in range(N_GOODS)] for j in range(N_CITIES)]
         global_bid_order = [[0 for i in range(N_GOODS)] for j in range(N_CITIES)]

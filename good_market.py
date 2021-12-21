@@ -1,3 +1,13 @@
+"""
+The Market class. It collects all the ask-bid orders 
+from workers and firms, update the price and allocate the 
+distrbution of products. 
+
+Also see readme.md on Github for its logical design
+Written by Shing Chi Leung in Dec 2021
+
+"""
+
 from mycalendar import Calendar
 from param import INGREDIENTS, INIT_PRICES, INIT_SALARY, N_CITIES, N_GOODS, PRODUCTIVITIES
 
@@ -34,6 +44,19 @@ class GoodMarket():
 
     def update_ask_transactions(self, transactions):
 
+        '''
+        collect and record all ask orders
+
+        transaction : list => a tuple contains
+            1. city_id of the firm
+            2. firm_id of the firm
+            3. city_id where the product is sold
+            4. the product (id) to be sold
+            5. amount
+
+        return None
+        '''
+
         # transaction contain 
         # [0-2] self.city_id, self.firm_id, self.city_id
         # [3-4] good_index, amount
@@ -43,6 +66,19 @@ class GoodMarket():
                 self.ask[i][j] = transactions[i][j]
 
     def update_bid_transactions(self, transactions):
+
+        '''
+        collect and record all bid orders
+
+        transaction : list => a tuple contains
+            1. city_id of the firm
+            2. firm_id of the firm
+            3. city_id where the product is sold
+            4. the product (id) to be sold
+            5. amount
+
+        return None
+        '''
 
         # transaction contain 
         # [0-2] self.city_id, self.firm_id, self.city_id
@@ -54,6 +90,15 @@ class GoodMarket():
 
 
     def update_price(self):
+
+        '''
+        update the product prices based on non-equilibrium pricing
+        based on the demand and supply of that round    
+
+        return 
+            self.ask_ratios: list => the fraction to be bought 
+            self.bid_ratios: list => the fraction to be sold
+        '''
 
         for i in range(N_CITIES):
             for j in range(N_GOODS):
@@ -85,6 +130,13 @@ class GoodMarket():
 
     def rank_goods(self):
 
+        '''
+        order the product according to their profitability
+        i.e. how much profit for selling one item
+
+        return None
+        '''
+
         # compute the market mark up
         costs = [[self.ref_salary[j] / self.ref_productivity[i] for i in range(N_GOODS)] for j in range(N_CITIES)]
 
@@ -101,4 +153,11 @@ class GoodMarket():
                 self.rank_goods[i][j] = ranks[j]
 
     def advance_day(self):
+
+        '''
+        advance to the next day
+        
+        return None
+        '''
+
         self.calendar.advance_day()

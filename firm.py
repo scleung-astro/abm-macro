@@ -1,3 +1,13 @@
+"""
+The Firm class. It contains all the basic operation from 
+production, employment and trading in the market. 
+
+Also see readme.md on Github for its logical design
+Written by Shing Chi Leung in Dec 2021
+
+"""
+
+
 from mycalendar import Calendar
 from param import INGREDIENTS, INIT_EMPLOYEES, INIT_FIRM_CASH, INIT_SALARY, N_CITIES, N_GOODS, PRODUCTIVITIES
 from random import randint, uniform, random
@@ -56,6 +66,17 @@ class Firm():
 
     def allocate_budget(self, prices, trends):
 
+        '''
+        decides how much budget is allocated to (1) buying ingredient
+        (2) salary (3) expansion and (4) investment
+
+        prices : List => Containing prices of all products in all cities
+        trends : List => Containing trends (if price is rising) of all products
+        in all cities
+
+        return None
+        '''
+
         x = max(self.employees * self.salary - self.salary_budget[self.city_id], 0)
         #x = round(x, 2)
 
@@ -86,6 +107,13 @@ class Firm():
 
     def decide_prod_ask_order(self):
 
+        '''
+        decide to purchase the ingredient from the market based on the 
+        daily production
+
+        return ask_order : Dict => key = [product] subkey = [city, amount]
+        '''
+
         for ingredient in self.ingredients:
             self.ask_orders[ingredient[0]]["city"] = self.city_id
             self.ask_orders[ingredient[0]]["amount"] = ingredient[1] * self.employees * self.productivity
@@ -97,6 +125,15 @@ class Firm():
         return self.ask_orders
 
     def decide_prod_bid_order(self, prices, rates):
+
+        '''
+        decide how many products to be sold based on inventory
+
+        prices : List => prices of all products in all cities
+        rates : List => exchange rate of all currencies
+
+        return ask_order : Dict => key = [product] subkey = [city, amount]
+        '''
 
         # decide which city to sell the product
         if self.only_domestic_sales:
@@ -113,6 +150,17 @@ class Firm():
 
     def process_transactions(self, ask_ratios, bid_ratios, prices):
         
+        '''
+        receive transaction result from market (through city) and 
+        complete the tranasaction record 
+
+        ask_ratios : List => fraction of received amount of products
+        bid_ratios : List => fraction of sold amount of products
+
+        return None
+        '''
+
+
         for k, v in self.ask_orders.items():
 
             amt = v["amount"] * ask_ratios[v["city"]][k] * prices[v["city"]][k]
@@ -136,6 +184,13 @@ class Firm():
 
     def make_product(self):
 
+        '''
+        make the product based on current ingredient inventory and 
+        workers available
+
+        return tuple (firm's city id, amount of salary to pay to workers)
+        '''
+
 
         x = self.employees * self.productivity
         for ingredient in self.ingredients:
@@ -153,6 +208,15 @@ class Firm():
 
 
     def decide_employ(self):
+
+        '''
+        decide employ or send away workers depending on the loan status
+
+        return employment : tuple => 
+            (city_id, firm_id, city_to_pay, amount_to_pay, change in debt,
+            change in labour workforce)
+        '''
+
 
         employment = None
 
@@ -197,6 +261,16 @@ class Firm():
         return employment
 
     def change_production(self, rank_goods):
+
+        '''
+        decide switch to other production line
+
+        rank_goods : List => ranking of the products according to their 
+        productivity
+
+        return None
+        '''
+
 
         if self.change_prod and self.employees == 1:
 

@@ -1,3 +1,13 @@
+"""
+The City class. It contais both the central bank/state
+for printing M1 money and the working labour as a 
+measurement of the employment rate.  
+
+Also see readme.md on Github for its logical design
+Written by Shing Chi Leung in Dec 2021
+
+"""
+
 from mycalendar import Calendar
 from firm import Firm
 from param import BASE_MARKUP, BUDGET_RATIO, INIT_CITIZENS, INIT_CITY_CASH, INIT_FIRMS, INIT_SALARY, N_CITIES, N_GOODS
@@ -47,6 +57,13 @@ class City():
 
     def firms_get_ask_orders(self):
 
+        '''
+        get from firm the ask orders for their purchase
+        and add them up for the total demand 
+
+        return firms_ask: dict => key = [city][item], value = amount
+        '''
+
         firms_ask = [[0 for i in range(N_GOODS)] for j in range(N_CITIES)]
 
         for firm in self.firms:
@@ -57,6 +74,13 @@ class City():
         return firms_ask
 
     def firms_get_bid_orders(self, prices, rates):
+
+        '''
+        get from firm the ask orders for their purchase
+        and add them up for the total supply 
+
+        return firms_ask: dict => key = [city][item] value=amount
+        '''
 
         firms_bid = [[0 for i in range(N_GOODS)] for j in range(N_CITIES)]
     
@@ -69,16 +93,44 @@ class City():
 
     def firms_make_products(self):
 
+        '''
+        ask all the firms to make the products
+
+        return None
+        '''
+
         for firm in self.firms:
             salary = firm.make_product()
             self.cash[salary[0]] += salary[1]
 
     def firms_decide_budget(self, prices, trends):
 
+        '''
+        ask all the firms to allocate budget for buying 
+        ingredients, paying salary, expand and invest
+
+        prices: list => the list containing prices
+        from all cities of all products
+        trends: list => the list containing whether 
+        the product is growing popular
+
+        return None
+        '''
+
         for firm in self.firms:
             firm.allocate_budget(prices, trends)
 
     def decide_purchase(self, prices : list):
+
+        '''
+        the state decide how much new liabilities (new money)
+        to support the system and return the the dict for the ask
+        order
+
+        prices: list: the list containing all products price in all
+        cities
+        return ask_order: dict => key = [city][product] value=amount
+        '''
 
         # first print the money
         budget = self.ref_salary * self.citizens
@@ -101,6 +153,17 @@ class City():
 
     def process_transactions(self, ask_ratios, bid_ratios, prices):
 
+        '''
+        ask all firms to process the payment and delivery (recipient) 
+        of the bought and sold products. also resolve the state's 
+        purchase order
+
+        ask_ratios: List => how much fraction of good can be received from purchase
+        bid_ratios: List => how much fraction of good can be sold in selling
+        prices: List => the list containing prices of all products in all cities
+        return None
+        '''
+
         for firm in self.firms:
             firm.process_transactions(ask_ratios, bid_ratios, prices)
 
@@ -111,15 +174,25 @@ class City():
 
             self.cash[v["city"]] -= amt
 
-        
-
-
     def population_growth(self):
+
+        '''
+        the population grows assuming some simple birth rates from statistics
+
+        return None
+        '''
 
         annual_salary = 252 * self.ref_salary 
         self.citizens += self.reserve / annual_salary
 
     def firms_decide_employ(self):
+
+        '''
+        the firm decides how many new employees to be employed
+        or how many employees to resign due to shortage of budget
+
+        return None
+        '''
 
         for firm in self.firms:
 
@@ -133,6 +206,13 @@ class City():
                     self.employed += employment[5]
 
     def grow_new_firm(self, rank_goods : list):
+
+        '''
+        generate new firms with the product selected by how popular the 
+        product is 
+
+        return None
+        '''
 
         n_new_firms = int(len(self.firms) * 0.01)
 
@@ -153,6 +233,12 @@ class City():
             self.firms.append(Firm(self.city_id, len(self.firms), job))
 
     def advance_day(self):
+
+        '''
+        advance the calendar day
+
+        return None
+        '''
 
         self.calendar.advance_day()
 
